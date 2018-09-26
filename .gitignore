@@ -260,11 +260,7 @@ paket-files/
 __pycache__/
 *.pyc
 
-# configs
-appsettings.*.json
-
+.vs
 .vscode
 
-.DS_Store
-
-site.min.css
+appsettings.json
