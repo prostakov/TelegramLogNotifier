@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Text;
+using Newtonsoft.Json;
+
 namespace TelegramLogNotifier
 {
     public class TelegramLogNotifier
@@ -24,7 +27,22 @@ namespace TelegramLogNotifier
 
 		void ProcessLine(string line)
         {
-            _telegramBotMessageSender.SendMessage(line);
+            var log = JsonConvert.DeserializeObject<Log>(line);
+
+            var message = GetMessage(log);
+
+            _telegramBotMessageSender.SendMessage(message);
+        }
+
+        string GetMessage(Log log)
+        {
+            var sb = new StringBuilder();
+            
+            sb.AppendLine("<b>" + log.Level + "</b>");
+            sb.AppendLine("<i>" + log.Timestamp.ToString() + "</i>");
+            sb.AppendLine(log.MessageTemplate);
+
+            return sb.ToString();
         }
     }
 }

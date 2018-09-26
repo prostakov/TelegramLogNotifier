@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace TelegramLogNotifier
 {
@@ -26,5 +27,16 @@ namespace TelegramLogNotifier
         public string Level { get; set; }
         public string MessageTemplate { get; set; }
         public Dictionary<string, string> Properties { get; set; }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            
+            sb.AppendLine("<b>" + Level + "</b>");
+            sb.AppendLine("<i>" + Timestamp.ToString() + "</i>");
+            sb.AppendLine(MessageTemplate);
+
+            return sb.ToString();
+        }
     }
 }
