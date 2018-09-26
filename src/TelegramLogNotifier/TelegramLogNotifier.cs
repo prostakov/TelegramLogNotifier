@@ -38,9 +38,18 @@ namespace TelegramLogNotifier
         {
             var sb = new StringBuilder();
             
-            sb.AppendLine("<b>" + log.Level + "</b>");
-            sb.AppendLine("<i>" + log.Timestamp.ToString() + "</i>");
-            sb.AppendLine(log.MessageTemplate);
+            sb.AppendLine($"<b>{log.Level}</b> - {log.Timestamp}");
+            sb.AppendLine($"<code>{log.MessageTemplate}</code>");
+
+            if (log.Properties.ContainsKey("SourceContext"))
+            {
+                sb.AppendLine($"Context: {log.Properties["SourceContext"]}");
+            }
+
+            if (log.Properties.ContainsKey("RequestPath"))
+            {
+                sb.AppendLine($"RequestPath: {log.Properties["RequestPath"]}");
+            }
 
             return sb.ToString();
         }
