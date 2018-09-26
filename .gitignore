@@ -263,4 +263,5 @@ __pycache__/
 .vs
 .vscode
 
-appsettings.json
+# Ignore local config
+appsettings.local.json

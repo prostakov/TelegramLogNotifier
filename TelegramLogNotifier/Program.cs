@@ -11,6 +11,7 @@ namespace TelegramLogNotifier
 			var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.local.json", optional: true)
                 .Build();
             
             var logFilePath = configuration.GetValue<string>("LogFilePath");
