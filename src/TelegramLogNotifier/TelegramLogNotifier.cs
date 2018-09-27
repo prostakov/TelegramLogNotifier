@@ -17,7 +17,7 @@ namespace TelegramLogNotifier
 
 		public void Run()
 		{
-			using (var fileChangeNotifier = new FileChangeNotifier(_logFilePath, ProcessLine))
+			using (var fileChangeNotifier = new FileChangeNotifier(_logFilePath, ProcessFileChange, AlertFileSizeExceeded))
             {
                 Console.WriteLine($"Watching changes to file: {_logFilePath}.");
                 Console.WriteLine("Press any key to exit.");
@@ -25,11 +25,18 @@ namespace TelegramLogNotifier
             }
 		}
 
-		void ProcessLine(string line)
+		void ProcessFileChange(string line)
         {
             var log = JsonConvert.DeserializeObject<Log>(line);
 
             var message = GetMessage(log);
+
+            _telegramBotMessageSender.SendMessage(message);
+        }
+
+        void AlertFileSizeExceeded()
+        {
+            var message = $"File size exceeded for log file: {_logFilePath}";
 
             _telegramBotMessageSender.SendMessage(message);
         }
