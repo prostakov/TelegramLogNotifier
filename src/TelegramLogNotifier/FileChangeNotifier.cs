@@ -10,7 +10,7 @@ namespace TelegramLogNotifier
         readonly string _filePath;
         readonly Action<string> _processFileChangeDelegate;
         readonly Action _alertFileSizeExceededDelegate;
-        readonly int _fileSizeExceededThresholdBytes = 10_485_760; // 10MB
+        readonly int _fileSizeExceededThresholdBytes = 104_857_600; // 100MB
         readonly CancellationTokenSource _cancelTokenSource;
         DateTime? _lastAlertDate;
 
