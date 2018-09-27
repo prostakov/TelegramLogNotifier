@@ -32,7 +32,7 @@ namespace TelegramLogNotifier
                     while (!_cancelTokenSource.IsCancellationRequested)
                     {
                         while (!sr.EndOfStream) _processLine(sr.ReadLine());
-                        while (sr.EndOfStream) Thread.Sleep(100);
+                        while (sr.EndOfStream && !_cancelTokenSource.IsCancellationRequested) Thread.Sleep(100);
                     }
                 }
             }
