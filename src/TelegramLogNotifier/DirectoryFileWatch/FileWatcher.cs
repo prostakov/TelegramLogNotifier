@@ -2,8 +2,9 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using TelegramLogNotifier.DirectoryFileWatch.Models;
 
-namespace TelegramLogNotifier.FileChangeNotifier
+namespace TelegramLogNotifier.DirectoryFileWatch
 {
     public class FileWatcher : IDisposable
     {

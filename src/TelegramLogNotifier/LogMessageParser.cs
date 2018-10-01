@@ -60,8 +60,6 @@ namespace TelegramLogNotifier
             };
             logObject = JsonConvert.DeserializeObject<T>(value, settings);
 
-            Console.WriteLine(result);
-
             return result;
         }
 

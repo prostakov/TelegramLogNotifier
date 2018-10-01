@@ -1,4 +1,4 @@
-namespace TelegramLogNotifier.FileChangeNotifier
+namespace TelegramLogNotifier.DirectoryFileWatch.Models
 {
 	public class FileEvent
     {

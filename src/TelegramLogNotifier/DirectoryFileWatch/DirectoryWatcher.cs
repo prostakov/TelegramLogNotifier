@@ -3,8 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using TelegramLogNotifier.DirectoryFileWatch.Models;
 
-namespace TelegramLogNotifier.FileChangeNotifier
+namespace TelegramLogNotifier.DirectoryFileWatch
 {
     public class DirectoryWatcher : IDisposable
     {
