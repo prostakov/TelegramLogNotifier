@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 
-namespace TelegramLogNotifier
+namespace TelegramLogNotifier.Telegram
 {
     public class TelegramBotMessageSender : IDisposable
     {

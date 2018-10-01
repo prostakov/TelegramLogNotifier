@@ -3,6 +3,8 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TelegramLogNotifier.DirectoryFileWatch;
+using TelegramLogNotifier.Telegram;
 
 namespace TelegramLogNotifier
 {
@@ -34,7 +36,8 @@ namespace TelegramLogNotifier
                 .AddJsonFile("appsettings.local.json", optional: true)
                 .Build();
             services.AddOptions();
-            services.Configure<Config>(configuration);
+            services.Configure<DirectoryFileWatchSettings>(configuration.GetSection("DirectoryFileWatch"));
+            services.Configure<TelegramSettings>(configuration.GetSection("Telegram"));
 
             services.AddTransient<TelegramLogNotifier>();
 

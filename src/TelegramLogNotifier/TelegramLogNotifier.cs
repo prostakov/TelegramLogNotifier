@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using TelegramLogNotifier.DirectoryFileWatch;
 using TelegramLogNotifier.DirectoryFileWatch.Models;
+using TelegramLogNotifier.Telegram;
 
 namespace TelegramLogNotifier
 {
@@ -11,10 +12,10 @@ namespace TelegramLogNotifier
         readonly TelegramBotMessageSender _telegramBotMessageSender;
         readonly LogMessageParser _logMessageParser;
 
-        public TelegramLogNotifier(IOptions<Config> configuration)
+        public TelegramLogNotifier(IOptions<DirectoryFileWatchSettings> directoryFileWatchConfiguration, IOptions<TelegramSettings> telegramConfiguration)
         {
-            _directoryWatcher = new DirectoryWatcher(configuration.Value.LogFilesDirectory, "*.log", ProcessFileChange);
-            _telegramBotMessageSender = new TelegramBotMessageSender(configuration.Value.TelegramBotToken, configuration.Value.TelegramChatId);
+            _directoryWatcher = new DirectoryWatcher(directoryFileWatchConfiguration.Value.LogFilesDirectory, "*.log", ProcessFileChange);
+            _telegramBotMessageSender = new TelegramBotMessageSender(telegramConfiguration.Value.TelegramBotToken, telegramConfiguration.Value.TelegramChatId);
             _logMessageParser = new LogMessageParser();
         }
 
