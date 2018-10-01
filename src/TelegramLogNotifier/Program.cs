@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TelegramLogNotifier.DirectoryFileWatch;
+using TelegramLogNotifier.Notifiers;
 using TelegramLogNotifier.Telegram;
 
 namespace TelegramLogNotifier
@@ -14,7 +15,7 @@ namespace TelegramLogNotifier
         {
             var serviceProvider = GetServiceProvider();
 
-            using (var app = serviceProvider.GetService<TelegramLogNotifier>())
+            using (var app = serviceProvider.GetService<DirectoryWatcher>())
             {
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
@@ -39,9 +40,10 @@ namespace TelegramLogNotifier
             services.Configure<DirectoryFileWatchSettings>(configuration.GetSection("DirectoryFileWatch"));
             services.Configure<TelegramSettings>(configuration.GetSection("Telegram"));
 
+            services.AddTransient<IFileEventNotifier, TelegramLogNotifier.Notifiers.TelegramLogNotifier>();
             services.AddTransient<TelegramBotMessageSender>();
             services.AddTransient<LogMessageParser>();
-            services.AddTransient<TelegramLogNotifier>();
+            services.AddTransient<DirectoryWatcher>();
 
             return services.BuildServiceProvider();
         }

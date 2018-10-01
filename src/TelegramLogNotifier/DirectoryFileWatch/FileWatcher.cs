@@ -2,7 +2,8 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using TelegramLogNotifier.DirectoryFileWatch.Models;
+using TelegramLogNotifier.Models;
+using TelegramLogNotifier.Notifiers;
 
 namespace TelegramLogNotifier.DirectoryFileWatch
 {
@@ -10,14 +11,14 @@ namespace TelegramLogNotifier.DirectoryFileWatch
     {
         const int FileSizeExceededThresholdBytes = 104857600; // 100MB
         public readonly string FilePath;
-        readonly Action<FileEvent> _processFileEvent;
+        readonly IFileEventNotifier _notifier;
         readonly CancellationTokenSource _cancelTokenSource;
         int _lastAlertOccurenceHour = -1;
 
-        public FileWatcher(string filePath, Action<FileEvent> processFileEvent)
+        public FileWatcher(string filePath, IFileEventNotifier notifier)
         {
             FilePath = filePath;
-            _processFileEvent = processFileEvent;
+            _notifier = notifier;
             
             _cancelTokenSource = new CancellationTokenSource();
             var task = new Task(Watch, _cancelTokenSource.Token, TaskCreationOptions.LongRunning);
@@ -42,7 +43,7 @@ namespace TelegramLogNotifier.DirectoryFileWatch
                         while (!sr.EndOfStream)
                         {
                             var fileEvent = new FileEvent {Type = FileEventType.Modified, Message = sr.ReadLine()};
-                            _processFileEvent(fileEvent);
+                            _notifier.Notify(fileEvent);
                         }
 
                         while (sr.EndOfStream && !_cancelTokenSource.IsCancellationRequested)
@@ -66,7 +67,7 @@ namespace TelegramLogNotifier.DirectoryFileWatch
                 _lastAlertOccurenceHour = DateTime.UtcNow.Hour;
                 
                 var fileEvent = new FileEvent {Type = FileEventType.FileSizeExceeded, Message = FilePath};
-                _processFileEvent(fileEvent);
+                _notifier.Notify(fileEvent);
             }
         }
 

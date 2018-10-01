@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using TelegramLogNotifier.DirectoryFileWatch.Models;
+using TelegramLogNotifier.Models;
+using TelegramLogNotifier.Notifiers;
 
 namespace TelegramLogNotifier.DirectoryFileWatch
 {
@@ -11,15 +13,15 @@ namespace TelegramLogNotifier.DirectoryFileWatch
     {
         readonly string _directoryPath;
         readonly string _directoryFileSearchPattern;
-        readonly Action<FileEvent> _processFileEvent;
+        readonly IFileEventNotifier _notifier;
         FileWatcher _currentFileWatcher;
         FileSystemWatcher _fileSystemWatcher;
 
-        public DirectoryWatcher(string directoryPath, string directoryFileSearchPattern, Action<FileEvent> processFileEvent)
+        public DirectoryWatcher(IOptions<DirectoryFileWatchSettings> settings, IFileEventNotifier notifier)
         {
-            _directoryPath = directoryPath;
-            _directoryFileSearchPattern = directoryFileSearchPattern;
-            _processFileEvent = processFileEvent;
+            _directoryPath = settings.Value.DirectoryPath;
+            _directoryFileSearchPattern = settings.Value.FileSearchPattern;
+            _notifier = notifier;
 
             _fileSystemWatcher = new FileSystemWatcher();
             _fileSystemWatcher.Path = _directoryPath;
@@ -50,7 +52,7 @@ namespace TelegramLogNotifier.DirectoryFileWatch
                     if (_currentFileWatcher != null)
                         _currentFileWatcher.Dispose();
 
-                    _currentFileWatcher = new FileWatcher(filePath, _processFileEvent);
+                    _currentFileWatcher = new FileWatcher(filePath, _notifier);
                 }
             }
         }

@@ -1,35 +1,33 @@
 ﻿using System;
 using Microsoft.Extensions.Options;
 using TelegramLogNotifier.DirectoryFileWatch;
-using TelegramLogNotifier.DirectoryFileWatch.Models;
+using TelegramLogNotifier.Models;
 using TelegramLogNotifier.Telegram;
 
-namespace TelegramLogNotifier
+namespace TelegramLogNotifier.Notifiers
 {
-    public class TelegramLogNotifier : IDisposable
+    public class TelegramLogNotifier : IFileEventNotifier
     {
-        readonly DirectoryWatcher _directoryWatcher;
         readonly TelegramBotMessageSender _telegramBotMessageSender;
         readonly LogMessageParser _logMessageParser;
 
-        public TelegramLogNotifier(IOptions<DirectoryFileWatchSettings> directoryFileWatchConfiguration, TelegramBotMessageSender telegramBotMessageSender, LogMessageParser logMessageParser)
+        public TelegramLogNotifier(TelegramBotMessageSender telegramBotMessageSender, LogMessageParser logMessageParser)
         {
-            _directoryWatcher = new DirectoryWatcher(directoryFileWatchConfiguration.Value.LogFilesDirectory, "*.log", ProcessFileChange);
             _telegramBotMessageSender = telegramBotMessageSender;
             _logMessageParser = logMessageParser;
         }
 
-        void ProcessFileChange(FileEvent evnt)
+        public void Notify(FileEvent fileEvent)
         {
             var message = string.Empty;
 
-            switch (evnt.Type)
+            switch (fileEvent.Type)
             {
                 case FileEventType.Modified:
-                    message = _logMessageParser.Parse(evnt.Message);
+                    message = _logMessageParser.Parse(fileEvent.Message);
                     break;
                 case FileEventType.FileSizeExceeded:
-                    message = $"File size exceeded for log file: {evnt.Message}";
+                    message = $"File size exceeded for log file: {fileEvent.Message}";
                     break;
                 default: throw new Exception("FileEventType not found!");
             }
@@ -39,9 +37,6 @@ namespace TelegramLogNotifier
 
         public void Dispose()
         {
-            if (_directoryWatcher != null)
-                _directoryWatcher.Dispose();
-
             if (_telegramBotMessageSender != null)
                 _telegramBotMessageSender.Dispose();
 

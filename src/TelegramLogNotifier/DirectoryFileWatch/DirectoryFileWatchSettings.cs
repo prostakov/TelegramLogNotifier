@@ -2,6 +2,7 @@ namespace TelegramLogNotifier.DirectoryFileWatch
 {
     public class DirectoryFileWatchSettings
     {
-        public string LogFilesDirectory { get; set; }
+        public string DirectoryPath { get; set; }
+        public string FileSearchPattern { get; set; }
     }
 }
