@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace TelegramLogNotifier.Telegram
 {
@@ -8,9 +9,9 @@ namespace TelegramLogNotifier.Telegram
     {
         readonly string _telegramBotSendMessageUrlTemplate;
         
-        public TelegramBotMessageSender(string botToken, int chatId)
+        public TelegramBotMessageSender(IOptions<TelegramSettings> settings)
         {
-            _telegramBotSendMessageUrlTemplate = $"https://api.telegram.org/bot{botToken}/sendMessage?chat_id={chatId}&parse_mode=HTML&text={"{0}"}";
+            _telegramBotSendMessageUrlTemplate = $"https://api.telegram.org/bot{settings.Value.BotToken}/sendMessage?chat_id={settings.Value.ChatId}&parse_mode=HTML&text={"{0}"}";
         }
 
         public void SendMessage(string message)

@@ -2,7 +2,7 @@ namespace TelegramLogNotifier.Telegram
 {
     public class TelegramSettings
     {
-        public string TelegramBotToken { get; set; }
-        public int TelegramChatId { get; set; }
+        public string BotToken { get; set; }
+        public int ChatId { get; set; }
     }
 }
