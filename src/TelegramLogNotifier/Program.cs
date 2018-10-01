@@ -27,11 +27,6 @@ namespace TelegramLogNotifier
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton(new LoggerFactory()
-              .AddConsole()
-              .AddDebug());
-            services.AddLogging();
-
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
