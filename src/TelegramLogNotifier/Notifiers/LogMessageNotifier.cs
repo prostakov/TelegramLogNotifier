@@ -1,19 +1,20 @@
 ﻿using System;
 using Microsoft.Extensions.Options;
 using TelegramLogNotifier.DirectoryFileWatch;
+using TelegramLogNotifier.interfaces;
 using TelegramLogNotifier.Models;
 using TelegramLogNotifier.Telegram;
 
 namespace TelegramLogNotifier.Notifiers
 {
-    public class TelegramLogNotifier : IFileEventNotifier
+    public class LogMessageNotifier : IFileEventNotifier
     {
-        readonly TelegramBotMessageSender _telegramBotMessageSender;
+        readonly IMessageSender _messageSender;
         readonly LogMessageParser _logMessageParser;
 
-        public TelegramLogNotifier(TelegramBotMessageSender telegramBotMessageSender, LogMessageParser logMessageParser)
+        public LogMessageNotifier(IMessageSender messageSender, LogMessageParser logMessageParser)
         {
-            _telegramBotMessageSender = telegramBotMessageSender;
+            _messageSender = messageSender;
             _logMessageParser = logMessageParser;
         }
 
@@ -32,13 +33,13 @@ namespace TelegramLogNotifier.Notifiers
                 default: throw new Exception("FileEventType not found!");
             }
 
-            _telegramBotMessageSender.SendMessage(message);
+            _messageSender.Send(message);
         }
 
         public void Dispose()
         {
-            if (_telegramBotMessageSender != null)
-                _telegramBotMessageSender.Dispose();
+            if (_messageSender != null)
+                _messageSender.Dispose();
 
             if (_logMessageParser != null)
                 _logMessageParser.Dispose();

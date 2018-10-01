@@ -1,7 +1,7 @@
 using System;
 using TelegramLogNotifier.Models;
 
-namespace TelegramLogNotifier.Notifiers
+namespace TelegramLogNotifier.interfaces
 {
     public interface IFileEventNotifier : IDisposable
     {

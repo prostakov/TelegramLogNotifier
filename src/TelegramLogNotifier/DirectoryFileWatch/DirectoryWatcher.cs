@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using TelegramLogNotifier.interfaces;
 using TelegramLogNotifier.Models;
 using TelegramLogNotifier.Notifiers;
 
