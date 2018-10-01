@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using TelegramLogNotifier.interfaces;
@@ -14,15 +15,14 @@ namespace TelegramLogNotifier.DirectoryFileWatch
     {
         readonly string _directoryPath;
         readonly string _directoryFileSearchPattern;
-        readonly IFileEventNotifier _notifier;
-        FileWatcher _currentFileWatcher;
+        readonly FileWatcher _fileWatcher;
         FileSystemWatcher _fileSystemWatcher;
 
-        public DirectoryWatcher(IOptions<DirectoryFileWatchSettings> settings, IFileEventNotifier notifier)
+        public DirectoryWatcher(IOptions<DirectoryFileWatchSettings> settings, FileWatcher fileWatcher)
         {
             _directoryPath = settings.Value.DirectoryPath;
             _directoryFileSearchPattern = settings.Value.FileSearchPattern;
-            _notifier = notifier;
+            _fileWatcher = fileWatcher;
 
             _fileSystemWatcher = new FileSystemWatcher();
             _fileSystemWatcher.Path = _directoryPath;
@@ -43,17 +43,14 @@ namespace TelegramLogNotifier.DirectoryFileWatch
 
             if (filePath == null)
             {
-                if (_currentFileWatcher != null)
-                    _currentFileWatcher.Dispose();
+                _fileWatcher.StopWatch();
             }
             else
             {
-                if (filePath != _currentFileWatcher?.FilePath)
+                if (filePath != _fileWatcher.FilePath)
                 {
-                    if (_currentFileWatcher != null)
-                        _currentFileWatcher.Dispose();
-
-                    _currentFileWatcher = new FileWatcher(filePath, _notifier);
+                    _fileWatcher.StopWatch();
+                    _fileWatcher.StartWatch(filePath);
                 }
             }
         }
@@ -65,8 +62,8 @@ namespace TelegramLogNotifier.DirectoryFileWatch
 
         public void Dispose()
         {
-            if (_currentFileWatcher != null)
-                _currentFileWatcher.Dispose();
+            if (_fileWatcher != null)
+                _fileWatcher.Dispose();
 
             if (_fileSystemWatcher != null)
                 _fileSystemWatcher.Dispose();

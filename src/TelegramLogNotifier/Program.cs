@@ -41,6 +41,7 @@ namespace TelegramLogNotifier
             services.Configure<DirectoryFileWatchSettings>(configuration.GetSection("DirectoryFileWatch"));
             services.Configure<TelegramSettings>(configuration.GetSection("Telegram"));
 
+            services.AddTransient<FileWatcher>();
             services.AddTransient<IFileEventNotifier, LogMessageNotifier>();
             services.AddTransient<IMessageSender, TelegramBotMessageSender>();
             services.AddTransient<LogMessageParser>();
