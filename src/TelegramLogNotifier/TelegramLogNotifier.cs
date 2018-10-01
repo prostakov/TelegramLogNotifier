@@ -12,11 +12,11 @@ namespace TelegramLogNotifier
         readonly TelegramBotMessageSender _telegramBotMessageSender;
         readonly LogMessageParser _logMessageParser;
 
-        public TelegramLogNotifier(IOptions<DirectoryFileWatchSettings> directoryFileWatchConfiguration, IOptions<TelegramSettings> telegramConfiguration)
+        public TelegramLogNotifier(IOptions<DirectoryFileWatchSettings> directoryFileWatchConfiguration, IOptions<TelegramSettings> telegramConfiguration, LogMessageParser logMessageParser)
         {
             _directoryWatcher = new DirectoryWatcher(directoryFileWatchConfiguration.Value.LogFilesDirectory, "*.log", ProcessFileChange);
             _telegramBotMessageSender = new TelegramBotMessageSender(telegramConfiguration.Value.TelegramBotToken, telegramConfiguration.Value.TelegramChatId);
-            _logMessageParser = new LogMessageParser();
+            _logMessageParser = logMessageParser;
         }
 
         void ProcessFileChange(FileEvent evnt)
