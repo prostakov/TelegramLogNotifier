@@ -4,7 +4,7 @@ using System.Net;
 
 namespace TelegramLogNotifier
 {
-    public class TelegramBotMessageSender
+    public class TelegramBotMessageSender : IDisposable
     {
         readonly string _telegramBotSendMessageUrlTemplate;
         
@@ -21,5 +21,7 @@ namespace TelegramLogNotifier
 
             request.GetResponse();
         }
+
+        public void Dispose(){}
     }
 }
