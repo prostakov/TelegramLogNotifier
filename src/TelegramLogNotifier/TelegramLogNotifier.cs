@@ -1,8 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 using TelegramLogNotifier.DirectoryFileWatch;
 using TelegramLogNotifier.DirectoryFileWatch.Models;
 
@@ -14,10 +11,10 @@ namespace TelegramLogNotifier
         readonly TelegramBotMessageSender _telegramBotMessageSender;
         readonly LogMessageParser _logMessageParser;
 
-        public TelegramLogNotifier(string logFilesDirectory, string telegramBotToken, int telegramChatId)
+        public TelegramLogNotifier(IOptions<Config> configuration)
         {
-            _directoryWatcher = new DirectoryWatcher(logFilesDirectory, "*.log", ProcessFileChange);
-            _telegramBotMessageSender = new TelegramBotMessageSender(telegramBotToken, telegramChatId);
+            _directoryWatcher = new DirectoryWatcher(configuration.Value.LogFilesDirectory, "*.log", ProcessFileChange);
+            _telegramBotMessageSender = new TelegramBotMessageSender(configuration.Value.TelegramBotToken, configuration.Value.TelegramChatId);
             _logMessageParser = new LogMessageParser();
         }
 
