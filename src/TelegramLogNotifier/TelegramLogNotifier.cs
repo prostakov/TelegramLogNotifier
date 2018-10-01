@@ -1,64 +1,53 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using TelegramLogNotifier.FileChangeNotifier;
 
 namespace TelegramLogNotifier
 {
-    public class TelegramLogNotifier
+    public class TelegramLogNotifier : IDisposable
     {
-		readonly string _logFilePath;
-		readonly TelegramBotMessageSender _telegramBotMessageSender;
+        readonly DirectoryWatcher _directoryWatcher;
+        readonly TelegramBotMessageSender _telegramBotMessageSender;
+        readonly LogMessageParser _logMessageParser;
 
-		public TelegramLogNotifier(string filePath, string telegramBotToken, int telegramChatId)
+        public TelegramLogNotifier(string logFilesDirectory, string telegramBotToken, int telegramChatId)
         {
-			_logFilePath = filePath;
+            _directoryWatcher = new DirectoryWatcher(logFilesDirectory, "*.log", ProcessFileChange);
             _telegramBotMessageSender = new TelegramBotMessageSender(telegramBotToken, telegramChatId);
+            _logMessageParser = new LogMessageParser();
         }
 
-		public void Run()
-		{
-			using (var fileChangeNotifier = new FileChangeNotifier(_logFilePath, ProcessFileChange, AlertFileSizeExceeded))
-            {
-                Console.WriteLine($"Watching changes to file: {_logFilePath}.");
-                Console.WriteLine("Press any key to exit.");
-                Console.ReadKey();
-            }
-		}
-
-		void ProcessFileChange(string line)
+        void ProcessFileChange(FileEvent evnt)
         {
-            var log = JsonConvert.DeserializeObject<Log>(line);
+            var message = string.Empty;
 
-            var message = GetMessage(log);
+            switch (evnt.Type)
+            {
+                case FileEventType.Modified:
+                    message = _logMessageParser.Parse(evnt.Message);
+                    break;
+                case FileEventType.FileSizeExceeded:
+                    message = $"File size exceeded for log file: {evnt.Message}";
+                    break;
+                default: throw new Exception("FileEventType not found!");
+            }
 
             _telegramBotMessageSender.SendMessage(message);
         }
 
-        void AlertFileSizeExceeded()
+        public void Dispose()
         {
-            var message = $"File size exceeded for log file: {_logFilePath}";
+            if (_directoryWatcher != null)
+                _directoryWatcher.Dispose();
 
-            _telegramBotMessageSender.SendMessage(message);
-        }
+            if (_telegramBotMessageSender != null)
+                _telegramBotMessageSender.Dispose();
 
-        string GetMessage(Log log)
-        {
-            var sb = new StringBuilder();
-            
-            sb.AppendLine($"<b>{log.Level}</b> - {log.Timestamp}");
-            sb.AppendLine($"<code>{log.MessageTemplate}</code>");
-
-            if (log.Properties.ContainsKey("SourceContext"))
-            {
-                sb.AppendLine($"Context: {log.Properties["SourceContext"]}");
-            }
-
-            if (log.Properties.ContainsKey("RequestPath"))
-            {
-                sb.AppendLine($"RequestPath: {log.Properties["RequestPath"]}");
-            }
-
-            return sb.ToString();
+            if (_logMessageParser != null)
+                _logMessageParser.Dispose();
         }
     }
 }

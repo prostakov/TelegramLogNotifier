@@ -14,12 +14,15 @@ namespace TelegramLogNotifier
                 .AddJsonFile("appsettings.local.json", optional: true)
                 .Build();
             
-            var logFilePath = configuration.GetValue<string>("LogFilePath");
+            var logFilesDirectory = configuration.GetValue<string>("LogFilesDirectory");
             var telegramBotToken = configuration.GetValue<string>("TelegramBotToken");
             var telegramChatId = configuration.GetValue<int>("TelegramChatId");
 
-			var telegramLogNotifier = new TelegramLogNotifier(logFilePath, telegramBotToken, telegramChatId);
-			telegramLogNotifier.Run();
+			using (var telegramLogNotifier = new TelegramLogNotifier(logFilesDirectory, telegramBotToken, telegramChatId))
+            {
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadKey();
+            }
         }
     }
 }
