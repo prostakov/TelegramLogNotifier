@@ -19,7 +19,7 @@ namespace TelegramLogNotifier
             using (var app = serviceProvider.GetService<DirectoryWatcher>())
             {
                 Console.WriteLine("Press any key to exit.");
-                Console.ReadKey();
+                Console.Read();
             }
         }
 
