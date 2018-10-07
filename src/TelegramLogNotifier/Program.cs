@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,8 +19,7 @@ namespace TelegramLogNotifier
 
             using (var app = serviceProvider.GetService<DirectoryWatcher>())
             {
-                Console.WriteLine("Press any key to exit.");
-                Console.Read();
+                Thread.Sleep(Timeout.Infinite);
             }
         }
 
