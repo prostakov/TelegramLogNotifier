@@ -37,9 +37,10 @@ namespace TelegramLogNotifier.DirectoryFileWatch
 
         void SetFileWatcher()
         {
-            var filePath = Directory.EnumerateFiles(_directoryPath, _directoryFileSearchPattern)
-                .OrderByDescending(filename => filename)
-                .FirstOrDefault();
+            var filePath = new DirectoryInfo(_directoryPath).GetFiles(_directoryFileSearchPattern)
+                .OrderByDescending(p => p.CreationTime)
+                .FirstOrDefault()?
+                .FullName;
 
             if (filePath == null)
             {
@@ -57,6 +58,7 @@ namespace TelegramLogNotifier.DirectoryFileWatch
 
         void FileSystemWatcher_Event(object sender, FileSystemEventArgs e)
         {
+            Console.WriteLine($"Directory content changed, resetting file watcher...");
             SetFileWatcher();
         }
 
