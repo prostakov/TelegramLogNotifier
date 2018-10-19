@@ -14,7 +14,7 @@ namespace TelegramLogNotifier.DirectoryFileWatch
     {
         readonly int _fileSizeExceededThresholdBytes;
         readonly IFileEventNotifier _notifier;
-        readonly CancellationTokenSource _cancelTokenSource;
+        CancellationTokenSource _cancelTokenSource;
         public string FilePath { get; private set; }
         int _lastAlertOccurenceHour = -1;
 
@@ -25,14 +25,14 @@ namespace TelegramLogNotifier.DirectoryFileWatch
                 : 104857600; // Set default to 100MB
             _notifier = notifier;
 
-            _cancelTokenSource = new CancellationTokenSource();
             FilePath = string.Empty;
         }
 
         public void StartWatch(string filePath)
         {
             FilePath = filePath;
-
+            
+            _cancelTokenSource = new CancellationTokenSource();
             var task = new Task(WatchFunc, _cancelTokenSource.Token, TaskCreationOptions.LongRunning);
             task.Start();
 
