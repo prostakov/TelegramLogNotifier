@@ -25,12 +25,12 @@ namespace TelegramLogNotifier
                 sb.AppendLine($"<b>{log.Level}</b> - {log.Timestamp}");
                 sb.AppendLine($"<code>{log.MessageTemplate}</code>");
 
-                if (log.Properties.ContainsKey("SourceContext"))
+                if (log.Properties.ContainsKey("SourceContext") && !string.IsNullOrWhiteSpace(log.Properties["SourceContext"]))
                 {
                     sb.AppendLine($"Context: {log.Properties["SourceContext"]}");
                 }
 
-                if (log.Properties.ContainsKey("RequestPath"))
+                if (log.Properties.ContainsKey("RequestPath") && !string.IsNullOrWhiteSpace(log.Properties["RequestPath"]))
                 {
                     sb.AppendLine($"RequestPath: {log.Properties["RequestPath"]}");
                 }
