@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using Microsoft.Extensions.Options;
 using TelegramLogNotifier.interfaces;
@@ -21,7 +22,17 @@ namespace TelegramLogNotifier.Telegram
 
             var request = (HttpWebRequest)WebRequest.Create(url);
 
-            request.GetResponse();
+            var response = request.GetResponse();
+
+            LogToConsole(response);
+        }
+
+        private void LogToConsole(WebResponse response)
+        {
+            var stream = response.GetResponseStream();
+            StreamReader reader = new StreamReader(stream);
+            string text = reader.ReadToEnd();
+            Console.WriteLine(text);
         }
 
         public void Dispose(){}
